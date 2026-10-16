@@ -3,226 +3,112 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <title>Elbląg 1969 ↔ 2025</title>
 <style>
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden
 }
-
-body {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  background: #14191f;
-  color: white;
-  font: 14px system-ui, sans-serif;
-  overscroll-behavior: none;
+body{
+  height:100dvh;display:flex;flex-direction:column;
+  background:#0b0e13;color:white;
+  font:14px system-ui,Arial,sans-serif;
+  overscroll-behavior:none
 }
-
-header {
-  flex: 0 0 auto;
-  z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  background: #202832;
+header{
+  flex:none;display:flex;flex-wrap:wrap;gap:8px;
+  align-items:center;padding:8px 10px;
+  background:#212b35;position:relative;z-index:5
 }
-
-header strong {
-  margin-right: auto;
-  font-size: 17px;
+header strong{font-size:16px;margin-right:auto}
+.controls{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap
 }
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 7px;
+button,select{
+  border:1px solid #607080;border-radius:6px;
+  background:#35485b;color:white;font:inherit;
+  padding:7px 9px;cursor:pointer
 }
-
-button, select {
-  padding: 8px 10px;
-  border: 1px solid #697887;
-  border-radius: 7px;
-  color: white;
-  background: #344659;
-  font: inherit;
-  cursor: pointer;
+button.active{background:#5684a9}
+#zoomText{min-width:43px;text-align:center}
+#viewport{
+  position:relative;flex:1;min-height:0;overflow:hidden;
+  background:#080b10;touch-action:none;
+  user-select:none;-webkit-user-select:none;
+  overscroll-behavior:contain;cursor:ew-resize
 }
-
-button.active {
-  background: #547fa2;
+#viewport.pan{cursor:grab}
+#viewport.dragging.pan{cursor:grabbing}
+.layer{
+  position:absolute;inset:0;overflow:hidden;
+  pointer-events:none
 }
-
-#zoomLabel {
-  min-width: 44px;
-  text-align: center;
+.layer img{
+  position:absolute;top:0;left:0;
+  width:9140px;height:8151px;max-width:none;
+  transform-origin:0 0;pointer-events:none;
+  -webkit-user-drag:none;will-change:transform
 }
-
-#viewport {
-  position: relative;
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
-  background: #080b10;
-  touch-action: none;
-  overscroll-behavior: contain;
-  user-select: none;
-  -webkit-user-select: none;
+#oldLayer{clip-path:inset(0 50% 0 0)}
+#divider{
+  position:absolute;top:0;bottom:0;left:50%;
+  width:2px;transform:translateX(-50%);
+  background:white;box-shadow:0 0 3px #000;
+  z-index:2;pointer-events:none
 }
-
-.photoPane {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
+#handle{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  display:grid;place-items:center;
+  width:42px;height:42px;border-radius:50%;
+  background:white;color:black;
+  border:1px solid #ddd;font-size:21px
 }
-
-.photoPane img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 9140px;
-  height: 8151px;
-  max-width: none;
-  transform-origin: 0 0;
-  pointer-events: none;
-  -webkit-user-drag: none;
+.year{
+  position:absolute;top:10px;z-index:3;
+  padding:5px 8px;border-radius:5px;
+  background:#000b;pointer-events:none
 }
-
-#oldPane {
-  clip-path: inset(0 50% 0 0);
+#yearOld{left:10px}
+#yearNew{right:10px}
+#navigator{
+  position:absolute;right:10px;bottom:10px;
+  width:150px;aspect-ratio:9140 / 8151;
+  border:2px solid white;border-radius:6px;
+  overflow:hidden;z-index:3;touch-action:none;
+  background:#111;cursor:crosshair
 }
-
-#divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  background: white;
-  box-shadow: 0 0 3px black;
-  transform: translateX(-50%);
-  pointer-events: none;
-  z-index: 2;
+#navigator img{
+  width:100%;height:100%;display:block;
+  pointer-events:none
 }
-
-#handle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: grid;
-  place-items: center;
-  transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
-  border: 2px solid #333;
-  border-radius: 50%;
-  background: white;
-  color: black;
-  font-size: 23px;
+#navBox{
+  position:absolute;border:2px solid yellow;
+  background:#ffff0026;pointer-events:none
 }
-
-.year {
-  position: absolute;
-  z-index: 3;
-  top: 12px;
-  padding: 6px 9px;
-  border-radius: 6px;
-  background: #000a;
-  pointer-events: none;
-}
-
-#yearOld { left: 12px; }
-#yearNew { right: 12px; }
-
-#navigator {
-  position: absolute;
-  z-index: 4;
-  right: 12px;
-  bottom: 12px;
-  width: 160px;
-  aspect-ratio: 9140 / 8151;
-  border: 2px solid white;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #222;
-  touch-action: none;
-}
-
-#navigator img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-#navMark {
-  position: absolute;
-  border: 2px solid yellow;
-  background: #ffff0022;
-  pointer-events: none;
-}
-
-@media (max-width: 750px) {
-  header {
-    padding: 7px 8px;
-    gap: 5px;
+@media(max-width:750px){
+  header{padding:7px 8px;gap:5px}
+  header strong{width:100%;margin:0}
+  .controls{width:100%;flex-wrap:nowrap;gap:5px}
+  .controls button{
+    flex:1;min-width:0;padding:9px 4px;font-size:12px
   }
-
-  header strong {
-    width: 100%;
-    font-size: 16px;
-  }
-
-  .controls {
-    width: 100%;
-    flex-wrap: nowrap;
-    gap: 5px;
-  }
-
-  .controls button {
-    flex: 1;
-    min-width: 0;
-    padding: 9px 4px;
-    font-size: 12px;
-  }
-
-  .desktopOnly {
-    display: none !important;
-  }
-
-  #navigator {
-    width: 94px;
-    right: 7px;
-    bottom: 7px;
-  }
-
-  .year {
-    font-size: 12px;
-  }
+  .desktopOnly{display:none!important}
+  #navigator{width:95px;right:7px;bottom:7px}
 }
 </style>
 </head>
 <body>
-
 <header>
   <strong>Elbląg: 1969 ↔ 2025</strong>
   <div class="controls">
-    <button id="slideBtn" class="active">Suwak</button>
-    <button id="panBtn">Przesuwanie obrazu</button>
-    <button id="minus" class="desktopOnly">−</button>
-    <span id="zoomLabel" class="desktopOnly">100%</span>
-    <button id="plus" class="desktopOnly">+</button>
-    <button id="reset">Dopasuj widok</button>
+    <button id="slideButton" class="active" type="button">Suwak</button>
+    <button id="panButton" type="button">Przesuwanie obrazu</button>
+    <button id="minus" type="button" class="desktopOnly">−</button>
+    <span id="zoomText" class="desktopOnly">100%</span>
+    <button id="plus" type="button" class="desktopOnly">+</button>
+    <button id="reset" type="button">Dopasuj widok</button>
     <select id="speed" class="desktopOnly"
             aria-label="Szybkość przesuwania">
       <option value="1">1×</option>
@@ -235,372 +121,332 @@ button.active {
 </header>
 
 <main id="viewport">
-  <div class="photoPane" id="newPane">
-    <img id="newPhoto"
+  <div class="layer" id="newLayer">
+    <img id="modern"
          src="Elblag_2025_suwak.webp"
-         alt="Elbląg w 2025 roku"
-         draggable="false">
+         alt="Elbląg 2025" draggable="false">
   </div>
 
-  <div class="photoPane" id="oldPane">
-    <img id="oldPhoto"
+  <div class="layer" id="oldLayer">
+    <img id="historic"
          src="Elblag_1969_suwak.webp"
-         alt="Elbląg w 1969 roku"
-         draggable="false">
+         alt="Elbląg 1969" draggable="false">
   </div>
 
-  <div id="divider">
-    <div id="handle">↔</div>
-  </div>
+  <div id="divider"><div id="handle">↔</div></div>
 
   <span class="year" id="yearOld">1969</span>
   <span class="year" id="yearNew">2025</span>
 
   <div id="navigator">
     <img src="Elblag_2025_suwak.webp"
-         alt="Miniatura Elbląga"
-         draggable="false">
-    <div id="navMark"></div>
+         alt="Miniatura" draggable="false">
+    <div id="navBox"></div>
   </div>
 </main>
 
 <script>
-"use strict";
+'use strict';
 
-const W = 9140;
-const H = 8151;
+const W=9140,H=8151;
+const vp=document.getElementById('viewport');
+const oldLayer=document.getElementById('oldLayer');
+const divider=document.getElementById('divider');
+const modern=document.getElementById('modern');
+const historic=document.getElementById('historic');
+const navigatorEl=document.getElementById('navigator');
+const navBox=document.getElementById('navBox');
+const zoomText=document.getElementById('zoomText');
+const slideButton=document.getElementById('slideButton');
+const panButton=document.getElementById('panButton');
 
-const vp = document.getElementById("viewport");
-const oldPane = document.getElementById("oldPane");
-const oldPhoto = document.getElementById("oldPhoto");
-const newPhoto = document.getElementById("newPhoto");
-const divider = document.getElementById("divider");
-const nav = document.getElementById("navigator");
-const mark = document.getElementById("navMark");
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 
-let fit = 1;
-let zoom = 1;
-let x = 0;
-let y = 0;
-let split = 0.5;
-let mode = "slide";
+let fit=1,zoom=1,x=0,y=0,split=.5;
+let mode='slide',pending=false;
 
-const fingers = new Map();
-let single = null;
-let gesture = null;
-let framePending = false;
+const touches=new Map();
+let single=null,pinch=null;
 
-const clamp = (v, a, b) =>
-  Math.max(a, Math.min(b, v));
+function render(){
+  pending=false;
 
-function paint() {
-  framePending = false;
+  const vw=vp.clientWidth;
+  const vh=vp.clientHeight;
+  const s=fit*zoom;
 
-  const vw = vp.clientWidth;
-  const vh = vp.clientHeight;
-  const scale = fit * zoom;
-  const iw = W * scale;
-  const ih = H * scale;
+  const t=`translate3d(${x}px,${y}px,0) scale(${s})`;
 
-  const transform =
-    `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+  modern.style.transform=t;
+  historic.style.transform=t;
 
-  oldPhoto.style.transform = transform;
-  newPhoto.style.transform = transform;
+  // Wspólna współrzędna ekranowa dla granicy i suwaka.
+  const boundary=split*vw;
 
-  // Obie granice liczone względem tego samego okna.
-  oldPane.style.clipPath =
-    `inset(0 ${100 * (1 - split)}% 0 0)`;
+  oldLayer.style.clipPath=
+    `inset(0 ${vw-boundary}px 0 0)`;
 
-  divider.style.left = `${100 * split}%`;
+  divider.style.left=`${boundary}px`;
 
-  document.getElementById("zoomLabel").textContent =
-    `${Math.round(zoom * 100)}%`;
+  zoomText.textContent=Math.round(zoom*100)+'%';
 
-  mark.style.left =
-    `${clamp(-x / iw, 0, 1) * 100}%`;
+  const iw=W*s,ih=H*s;
 
-  mark.style.top =
-    `${clamp(-y / ih, 0, 1) * 100}%`;
+  const left=clamp(-x/iw,0,1);
+  const top=clamp(-y/ih,0,1);
+  const right=clamp((vw-x)/iw,0,1);
+  const bottom=clamp((vh-y)/ih,0,1);
 
-  mark.style.width =
-    `${clamp(vw / iw, 0, 1) * 100}%`;
-
-  mark.style.height =
-    `${clamp(vh / ih, 0, 1) * 100}%`;
+  navBox.style.left=(left*100)+'%';
+  navBox.style.top=(top*100)+'%';
+  navBox.style.width=((right-left)*100)+'%';
+  navBox.style.height=((bottom-top)*100)+'%';
 }
 
-function schedulePaint() {
-  if (!framePending) {
-    framePending = true;
-    requestAnimationFrame(paint);
+function requestRender(){
+  if(!pending){
+    pending=true;
+    requestAnimationFrame(render);
   }
 }
 
-function fitView() {
-  fit = Math.min(
-    vp.clientWidth / W,
-    vp.clientHeight / H
-  );
+function resetView(){
+  const vw=vp.clientWidth;
+  const vh=vp.clientHeight;
 
-  zoom = 1;
+  fit=Math.min(vw/W,vh/H);
+  zoom=1;
 
-  x = (vp.clientWidth - W * fit) / 2;
-  y = (vp.clientHeight - H * fit) / 2;
+  x=(vw-W*fit)/2;
+  y=(vh-H*fit)/2;
 
-  schedulePaint();
+  requestRender();
 }
 
-function zoomAround(factor, cx, cy) {
-  const previousScale = fit * zoom;
+function zoomAt(factor,cx,cy){
+  const oldS=fit*zoom;
+  const px=(cx-x)/oldS;
+  const py=(cy-y)/oldS;
 
-  const imageX = (cx - x) / previousScale;
-  const imageY = (cy - y) / previousScale;
+  zoom=clamp(zoom*factor,1,24);
 
-  zoom = clamp(zoom * factor, 1, 24);
+  const s=fit*zoom;
 
-  const newScale = fit * zoom;
+  x=cx-px*s;
+  y=cy-py*s;
 
-  x = cx - imageX * newScale;
-  y = cy - imageY * newScale;
-
-  schedulePaint();
+  requestRender();
 }
 
-function setMode(value) {
-  mode = value;
+function setMode(m){
+  mode=m;
 
-  document.getElementById("slideBtn")
-    .classList.toggle("active", mode === "slide");
-
-  document.getElementById("panBtn")
-    .classList.toggle("active", mode === "pan");
+  slideButton.classList.toggle('active',m==='slide');
+  panButton.classList.toggle('active',m==='pan');
+  vp.classList.toggle('pan',m==='pan');
 }
 
-document.getElementById("slideBtn").onclick =
-  () => setMode("slide");
+slideButton.addEventListener('click',()=>setMode('slide'));
+panButton.addEventListener('click',()=>setMode('pan'));
 
-document.getElementById("panBtn").onclick =
-  () => setMode("pan");
+document.getElementById('reset')
+  .addEventListener('click',resetView);
 
-document.getElementById("reset").onclick = fitView;
+document.getElementById('plus').addEventListener('click',()=>{
+  zoomAt(1.25,vp.clientWidth/2,vp.clientHeight/2);
+});
 
-document.getElementById("plus").onclick = () =>
-  zoomAround(
-    1.25,
-    vp.clientWidth / 2,
-    vp.clientHeight / 2
-  );
+document.getElementById('minus').addEventListener('click',()=>{
+  zoomAt(0.8,vp.clientWidth/2,vp.clientHeight/2);
+});
 
-document.getElementById("minus").onclick = () =>
-  zoomAround(
-    0.8,
-    vp.clientWidth / 2,
-    vp.clientHeight / 2
-  );
-
-vp.addEventListener("wheel", e => {
+vp.addEventListener('wheel',e=>{
   e.preventDefault();
 
-  const r = vp.getBoundingClientRect();
+  const r=vp.getBoundingClientRect();
 
-  zoomAround(
-    e.deltaY < 0 ? 1.16 : 1 / 1.16,
-    e.clientX - r.left,
-    e.clientY - r.top
+  zoomAt(
+    e.deltaY<0?1.15:1/1.15,
+    e.clientX-r.left,
+    e.clientY-r.top
   );
-}, { passive: false });
+},{passive:false});
 
-function localPoint(e) {
-  const r = vp.getBoundingClientRect();
+function point(e){
+  const r=vp.getBoundingClientRect();
 
   return {
-    x: e.clientX - r.left,
-    y: e.clientY - r.top
+    x:e.clientX-r.left,
+    y:e.clientY-r.top
   };
 }
 
-function beginPinch() {
-  if (fingers.size !== 2) return;
+function beginPinch(){
+  if(touches.size!==2)return;
 
-  const [a, b] = [...fingers.values()];
+  const [a,b]=Array.from(touches.values());
+  const cx=(a.x+b.x)/2;
+  const cy=(a.y+b.y)/2;
 
-  const cx = (a.x + b.x) / 2;
-  const cy = (a.y + b.y) / 2;
-
-  gesture = {
-    distance: Math.max(
-      1,
-      Math.hypot(a.x - b.x, a.y - b.y)
+  pinch={
+    distance:Math.max(
+      1,Math.hypot(a.x-b.x,a.y-b.y)
     ),
-    startZoom: zoom,
-    imageX: (cx - x) / (fit * zoom),
-    imageY: (cy - y) / (fit * zoom)
+    initialZoom:zoom,
+    imageX:(cx-x)/(fit*zoom),
+    imageY:(cy-y)/(fit*zoom)
   };
 
-  single = null;
+  single=null;
 }
 
-vp.addEventListener("pointerdown", e => {
-  if (e.target.closest("#navigator")) return;
+vp.addEventListener('pointerdown',e=>{
+  if(e.target.closest('#navigator'))return;
+  if(e.pointerType==='mouse'&&e.button!==0)return;
 
-  if (e.pointerType === "mouse" && e.button !== 0) {
-    return;
-  }
-
+  e.preventDefault();
   vp.setPointerCapture(e.pointerId);
 
-  const p = localPoint(e);
-  fingers.set(e.pointerId, p);
+  const p=point(e);
+  touches.set(e.pointerId,p);
 
-  if (fingers.size === 1) {
-    single = {
-      id: e.pointerId,
-      startPoint: p,
-      startX: x,
-      startY: y
+  if(touches.size===1){
+    single={
+      id:e.pointerId,
+      p,
+      startX:x,
+      startY:y
     };
 
-    if (mode === "slide") {
-      split = clamp(p.x / vp.clientWidth, 0, 1);
+    if(mode==='slide'&&e.pointerType==='mouse'){
+      split=clamp(p.x/vp.clientWidth,0,1);
     }
-  } else if (fingers.size === 2) {
+  }else if(touches.size===2){
     beginPinch();
   }
 
-  schedulePaint();
+  vp.classList.add('dragging');
+  requestRender();
 });
 
-vp.addEventListener("pointermove", e => {
-  if (!fingers.has(e.pointerId)) return;
+vp.addEventListener('pointermove',e=>{
+  if(!touches.has(e.pointerId))return;
 
-  const p = localPoint(e);
-  fingers.set(e.pointerId, p);
+  e.preventDefault();
 
-  if (fingers.size === 2 && gesture) {
-    const [a, b] = [...fingers.values()];
+  const p=point(e);
+  touches.set(e.pointerId,p);
 
-    const cx = (a.x + b.x) / 2;
-    const cy = (a.y + b.y) / 2;
+  if(touches.size===2&&pinch){
+    const [a,b]=Array.from(touches.values());
 
-    const distance = Math.hypot(
-      a.x - b.x,
-      a.y - b.y
+    const cx=(a.x+b.x)/2;
+    const cy=(a.y+b.y)/2;
+    const dist=Math.hypot(a.x-b.x,a.y-b.y);
+
+    zoom=clamp(
+      pinch.initialZoom*dist/pinch.distance,
+      1,24
     );
 
-    zoom = clamp(
-      gesture.startZoom *
-        distance / gesture.distance,
-      1,
-      24
-    );
+    const s=fit*zoom;
+    x=cx-pinch.imageX*s;
+    y=cy-pinch.imageY*s;
 
-    x = cx - gesture.imageX * fit * zoom;
-    y = cy - gesture.imageY * fit * zoom;
-
-  } else if (
-    fingers.size === 1 &&
+  }else if(
+    touches.size===1 &&
     single &&
-    single.id === e.pointerId
-  ) {
-    if (mode === "slide") {
-      split = clamp(
-        p.x / vp.clientWidth,
-        0,
-        1
-      );
-    } else {
-      // Swobodne przesuwanie we wszystkich kierunkach.
-      x = single.startX +
-        p.x - single.startPoint.x;
-
-      y = single.startY +
-        p.y - single.startPoint.y;
+    single.id===e.pointerId
+  ){
+    if(mode==='pan'){
+      x=single.startX+p.x-single.p.x;
+      y=single.startY+p.y-single.p.y;
+    }else{
+      split=clamp(p.x/vp.clientWidth,0,1);
     }
   }
 
-  schedulePaint();
+  requestRender();
 });
 
-function endPointer(e) {
-  if (!fingers.has(e.pointerId)) return;
+function endPointer(e){
+  if(!touches.has(e.pointerId))return;
 
-  fingers.delete(e.pointerId);
-  gesture = null;
+  touches.delete(e.pointerId);
+  pinch=null;
 
-  if (fingers.size === 1) {
-    const [id, p] = [...fingers.entries()][0];
+  if(touches.size===1){
+    const [id,p]=Array.from(touches.entries())[0];
 
-    single = {
+    single={
       id,
-      startPoint: p,
-      startX: x,
-      startY: y
+      p,
+      startX:x,
+      startY:y
     };
-  } else {
-    single = null;
+  }else{
+    single=null;
+    vp.classList.remove('dragging');
   }
 
-  schedulePaint();
+  requestRender();
 }
 
-vp.addEventListener("pointerup", endPointer);
-vp.addEventListener("pointercancel", endPointer);
-vp.addEventListener("lostpointercapture", endPointer);
+vp.addEventListener('pointerup',endPointer);
+vp.addEventListener('pointercancel',endPointer);
+vp.addEventListener('lostpointercapture',endPointer);
 
-function moveFromNavigator(e) {
-  const r = nav.getBoundingClientRect();
+function panFromMini(e){
+  const r=navigatorEl.getBoundingClientRect();
 
-  const u = clamp(
-    (e.clientX - r.left) / r.width,
-    0,
-    1
+  const u=clamp(
+    (e.clientX-r.left)/r.width,0,1
   );
 
-  const v = clamp(
-    (e.clientY - r.top) / r.height,
-    0,
-    1
+  const v=clamp(
+    (e.clientY-r.top)/r.height,0,1
   );
 
-  x = vp.clientWidth / 2 - u * W * fit * zoom;
-  y = vp.clientHeight / 2 - v * H * fit * zoom;
+  x=vp.clientWidth/2-u*W*fit*zoom;
+  y=vp.clientHeight/2-v*H*fit*zoom;
 
-  schedulePaint();
+  requestRender();
 }
 
-nav.addEventListener("pointerdown", e => {
+navigatorEl.addEventListener('pointerdown',e=>{
   e.stopPropagation();
-  nav.setPointerCapture(e.pointerId);
-  moveFromNavigator(e);
+  e.preventDefault();
+
+  navigatorEl.setPointerCapture(e.pointerId);
+  panFromMini(e);
 });
 
-nav.addEventListener("pointermove", e => {
-  if (nav.hasPointerCapture(e.pointerId)) {
-    moveFromNavigator(e);
+navigatorEl.addEventListener('pointermove',e=>{
+  if(navigatorEl.hasPointerCapture(e.pointerId)){
+    panFromMini(e);
   }
 });
 
-window.addEventListener("keydown", e => {
-  if (mode !== "pan") return;
+window.addEventListener('keydown',e=>{
+  if(mode!=='pan')return;
 
-  const amount = 25 * Number(
-    document.getElementById("speed").value
+  const d=25*Number(
+    document.getElementById('speed').value
   );
 
-  if (e.key === "ArrowLeft") x += amount;
-  else if (e.key === "ArrowRight") x -= amount;
-  else if (e.key === "ArrowUp") y += amount;
-  else if (e.key === "ArrowDown") y -= amount;
+  if(e.key==='ArrowLeft')x+=d;
+  else if(e.key==='ArrowRight')x-=d;
+  else if(e.key==='ArrowUp')y+=d;
+  else if(e.key==='ArrowDown')y-=d;
   else return;
 
   e.preventDefault();
-  schedulePaint();
+  requestRender();
 });
 
-window.addEventListener("resize", fitView);
+window.addEventListener('resize',resetView);
 
-fitView();
+resetView();
 </script>
 </body>
 </html>
