@@ -2,156 +2,213 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Elbląg 1969 ↔ 2025</title>
 <style>
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   display: flex;
   flex-direction: column;
-  font-family: Arial, sans-serif;
+  height: 100dvh;
   background: #14191f;
   color: white;
+  font: 14px system-ui, sans-serif;
+  overscroll-behavior: none;
 }
+
 header {
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 10px;
+  padding: 9px 12px;
   background: #202832;
 }
-header strong { margin-right: auto; font-size: 18px; }
+
+header strong {
+  margin-right: auto;
+  font-size: 17px;
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
   align-items: center;
+  gap: 7px;
 }
+
 button, select {
-  padding: 9px;
+  padding: 8px 10px;
   border: 1px solid #697887;
   border-radius: 7px;
   color: white;
   background: #344659;
-  font-size: 14px;
+  font: inherit;
   cursor: pointer;
 }
-button.active { background: #547fa2; }
+
+button.active {
+  background: #547fa2;
+}
+
+#zoomLabel {
+  min-width: 44px;
+  text-align: center;
+}
+
 #viewport {
   position: relative;
-  flex: 1;
+  flex: 1 1 0;
   min-height: 0;
   overflow: hidden;
   background: #080b10;
   touch-action: none;
+  overscroll-behavior: contain;
+  user-select: none;
+  -webkit-user-select: none;
 }
-#stage {
+
+.photoPane {
   position: absolute;
-  width: 9140px;
-  height: 8151px;
-  transform-origin: top left;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
 }
-#stage img {
+
+.photoPane img {
   position: absolute;
   top: 0;
   left: 0;
   width: 9140px;
   height: 8151px;
   max-width: none;
+  transform-origin: 0 0;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
-#oldCover {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
+
+#oldPane {
   clip-path: inset(0 50% 0 0);
 }
+
 #divider {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 3px;
+  width: 2px;
   background: white;
+  box-shadow: 0 0 3px black;
   transform: translateX(-50%);
   pointer-events: none;
+  z-index: 2;
 }
+
 #handle {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
-  background: white;
-  color: black;
-  border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 25px;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border: 2px solid #333;
+  border-radius: 50%;
+  background: white;
+  color: black;
+  font-size: 23px;
 }
+
 .year {
   position: absolute;
+  z-index: 3;
   top: 12px;
-  padding: 7px 10px;
+  padding: 6px 9px;
   border-radius: 6px;
-  background: #000b;
+  background: #000a;
   pointer-events: none;
 }
+
 #yearOld { left: 12px; }
 #yearNew { right: 12px; }
+
 #navigator {
   position: absolute;
+  z-index: 4;
   right: 12px;
   bottom: 12px;
-  width: 165px;
+  width: 160px;
   aspect-ratio: 9140 / 8151;
   border: 2px solid white;
-  border-radius: 7px;
+  border-radius: 6px;
   overflow: hidden;
-  touch-action: none;
   background: #222;
+  touch-action: none;
 }
+
 #navigator img {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
+  pointer-events: none;
 }
+
 #navMark {
   position: absolute;
   border: 2px solid yellow;
   background: #ffff0022;
   pointer-events: none;
 }
+
 @media (max-width: 750px) {
   header {
-    padding: 8px;
-    gap: 7px;
+    padding: 7px 8px;
+    gap: 5px;
   }
+
   header strong {
     width: 100%;
     font-size: 16px;
   }
+
   .controls {
     width: 100%;
     flex-wrap: nowrap;
+    gap: 5px;
   }
+
   .controls button {
     flex: 1;
+    min-width: 0;
     padding: 9px 4px;
     font-size: 12px;
   }
-  .desktopOnly { display: none !important; }
+
+  .desktopOnly {
+    display: none !important;
+  }
+
   #navigator {
-    width: 95px;
+    width: 94px;
     right: 7px;
     bottom: 7px;
   }
-  .year { font-size: 13px; }
+
+  .year {
+    font-size: 12px;
+  }
 }
 </style>
 </head>
@@ -166,7 +223,8 @@ button.active { background: #547fa2; }
     <span id="zoomLabel" class="desktopOnly">100%</span>
     <button id="plus" class="desktopOnly">+</button>
     <button id="reset">Dopasuj widok</button>
-    <select id="speed" class="desktopOnly">
+    <select id="speed" class="desktopOnly"
+            aria-label="Szybkość przesuwania">
       <option value="1">1×</option>
       <option value="2">2×</option>
       <option value="3" selected>3×</option>
@@ -177,108 +235,177 @@ button.active { background: #547fa2; }
 </header>
 
 <main id="viewport">
-  <div id="stage">
-    <img src="Elblag_2025_suwak.webp" alt="Elbląg 2025">
-    <div id="oldCover">
-      <img src="Elblag_1969_suwak.webp" alt="Elbląg 1969">
-    </div>
+  <div class="photoPane" id="newPane">
+    <img id="newPhoto"
+         src="Elblag_2025_suwak.webp"
+         alt="Elbląg w 2025 roku"
+         draggable="false">
   </div>
-  <div id="divider"><div id="handle">↔</div></div>
-  <div class="year" id="yearOld">1969</div>
-  <div class="year" id="yearNew">2025</div>
+
+  <div class="photoPane" id="oldPane">
+    <img id="oldPhoto"
+         src="Elblag_1969_suwak.webp"
+         alt="Elbląg w 1969 roku"
+         draggable="false">
+  </div>
+
+  <div id="divider">
+    <div id="handle">↔</div>
+  </div>
+
+  <span class="year" id="yearOld">1969</span>
+  <span class="year" id="yearNew">2025</span>
+
   <div id="navigator">
-    <img src="Elblag_2025_suwak.webp" alt="Miniatura mapy">
+    <img src="Elblag_2025_suwak.webp"
+         alt="Miniatura Elbląga"
+         draggable="false">
     <div id="navMark"></div>
   </div>
 </main>
 
 <script>
-const W = 9140, H = 8151;
+"use strict";
+
+const W = 9140;
+const H = 8151;
+
 const vp = document.getElementById("viewport");
-const stage = document.getElementById("stage");
-const cover = document.getElementById("oldCover");
+const oldPane = document.getElementById("oldPane");
+const oldPhoto = document.getElementById("oldPhoto");
+const newPhoto = document.getElementById("newPhoto");
 const divider = document.getElementById("divider");
-const mark = document.getElementById("navMark");
 const nav = document.getElementById("navigator");
+const mark = document.getElementById("navMark");
 
-let fit = 1, zoom = 1, x = 0, y = 0;
-let position = 0.5, mode = "slide";
-let drag = null, pinch = null;
+let fit = 1;
+let zoom = 1;
+let x = 0;
+let y = 0;
+let split = 0.5;
+let mode = "slide";
+
 const fingers = new Map();
+let single = null;
+let gesture = null;
+let framePending = false;
 
-const clamp = (v, min, max) =>
-  Math.max(min, Math.min(max, v));
+const clamp = (v, a, b) =>
+  Math.max(a, Math.min(b, v));
 
-function redraw() {
-  const w = vp.clientWidth, h = vp.clientHeight;
-  const s = fit * zoom;
-  const iw = W * s, ih = H * s;
+function paint() {
+  framePending = false;
 
-  x = iw <= w ? (w - iw) / 2 : clamp(x, w - iw, 0);
-  y = ih <= h ? (h - ih) / 2 : clamp(y, h - ih, 0);
+  const vw = vp.clientWidth;
+  const vh = vp.clientHeight;
+  const scale = fit * zoom;
+  const iw = W * scale;
+  const ih = H * scale;
 
-  stage.style.transform =
-    `translate(${x}px,${y}px) scale(${s})`;
-  cover.style.clipPath =
-    `inset(0 ${100 - position * 100}% 0 0)`;
-  divider.style.left = (position * 100) + "%";
+  const transform =
+    `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+
+  oldPhoto.style.transform = transform;
+  newPhoto.style.transform = transform;
+
+  // Obie granice liczone względem tego samego okna.
+  oldPane.style.clipPath =
+    `inset(0 ${100 * (1 - split)}% 0 0)`;
+
+  divider.style.left = `${100 * split}%`;
 
   document.getElementById("zoomLabel").textContent =
-    Math.round(zoom * 100) + "%";
+    `${Math.round(zoom * 100)}%`;
 
-  mark.style.left = (clamp(-x / iw, 0, 1) * 100) + "%";
-  mark.style.top = (clamp(-y / ih, 0, 1) * 100) + "%";
-  mark.style.width = (clamp(w / iw, 0, 1) * 100) + "%";
-  mark.style.height = (clamp(h / ih, 0, 1) * 100) + "%";
+  mark.style.left =
+    `${clamp(-x / iw, 0, 1) * 100}%`;
+
+  mark.style.top =
+    `${clamp(-y / ih, 0, 1) * 100}%`;
+
+  mark.style.width =
+    `${clamp(vw / iw, 0, 1) * 100}%`;
+
+  mark.style.height =
+    `${clamp(vh / ih, 0, 1) * 100}%`;
 }
 
-function resetView() {
-  fit = Math.min(vp.clientWidth / W, vp.clientHeight / H);
+function schedulePaint() {
+  if (!framePending) {
+    framePending = true;
+    requestAnimationFrame(paint);
+  }
+}
+
+function fitView() {
+  fit = Math.min(
+    vp.clientWidth / W,
+    vp.clientHeight / H
+  );
+
   zoom = 1;
+
   x = (vp.clientWidth - W * fit) / 2;
   y = (vp.clientHeight - H * fit) / 2;
-  redraw();
+
+  schedulePaint();
 }
 
-function zoomAt(factor, cx, cy) {
-  const oldScale = fit * zoom;
-  const imageX = (cx - x) / oldScale;
-  const imageY = (cy - y) / oldScale;
+function zoomAround(factor, cx, cy) {
+  const previousScale = fit * zoom;
+
+  const imageX = (cx - x) / previousScale;
+  const imageY = (cy - y) / previousScale;
 
   zoom = clamp(zoom * factor, 1, 24);
+
   const newScale = fit * zoom;
 
   x = cx - imageX * newScale;
   y = cy - imageY * newScale;
-  redraw();
+
+  schedulePaint();
 }
 
 function setMode(value) {
   mode = value;
-  document.getElementById("slideBtn").classList.toggle(
-    "active", mode === "slide"
-  );
-  document.getElementById("panBtn").classList.toggle(
-    "active", mode === "pan"
-  );
+
+  document.getElementById("slideBtn")
+    .classList.toggle("active", mode === "slide");
+
+  document.getElementById("panBtn")
+    .classList.toggle("active", mode === "pan");
 }
 
 document.getElementById("slideBtn").onclick =
   () => setMode("slide");
+
 document.getElementById("panBtn").onclick =
   () => setMode("pan");
-document.getElementById("reset").onclick = resetView;
+
+document.getElementById("reset").onclick = fitView;
 
 document.getElementById("plus").onclick = () =>
-  zoomAt(1.25, vp.clientWidth / 2, vp.clientHeight / 2);
+  zoomAround(
+    1.25,
+    vp.clientWidth / 2,
+    vp.clientHeight / 2
+  );
+
 document.getElementById("minus").onclick = () =>
-  zoomAt(0.8, vp.clientWidth / 2, vp.clientHeight / 2);
+  zoomAround(
+    0.8,
+    vp.clientWidth / 2,
+    vp.clientHeight / 2
+  );
 
 vp.addEventListener("wheel", e => {
   e.preventDefault();
+
   const r = vp.getBoundingClientRect();
-  zoomAt(
-    e.deltaY < 0 ? 1.2 : 1 / 1.2,
+
+  zoomAround(
+    e.deltaY < 0 ? 1.16 : 1 / 1.16,
     e.clientX - r.left,
     e.clientY - r.top
   );
@@ -286,115 +413,194 @@ vp.addEventListener("wheel", e => {
 
 function localPoint(e) {
   const r = vp.getBoundingClientRect();
-  return { x: e.clientX - r.left, y: e.clientY - r.top };
+
+  return {
+    x: e.clientX - r.left,
+    y: e.clientY - r.top
+  };
+}
+
+function beginPinch() {
+  if (fingers.size !== 2) return;
+
+  const [a, b] = [...fingers.values()];
+
+  const cx = (a.x + b.x) / 2;
+  const cy = (a.y + b.y) / 2;
+
+  gesture = {
+    distance: Math.max(
+      1,
+      Math.hypot(a.x - b.x, a.y - b.y)
+    ),
+    startZoom: zoom,
+    imageX: (cx - x) / (fit * zoom),
+    imageY: (cy - y) / (fit * zoom)
+  };
+
+  single = null;
 }
 
 vp.addEventListener("pointerdown", e => {
   if (e.target.closest("#navigator")) return;
+
+  if (e.pointerType === "mouse" && e.button !== 0) {
+    return;
+  }
+
   vp.setPointerCapture(e.pointerId);
+
   const p = localPoint(e);
   fingers.set(e.pointerId, p);
 
   if (fingers.size === 1) {
-    drag = { ...p, startX: x, startY: y };
+    single = {
+      id: e.pointerId,
+      startPoint: p,
+      startX: x,
+      startY: y
+    };
+
     if (mode === "slide") {
-      position = clamp(p.x / vp.clientWidth, 0, 1);
+      split = clamp(p.x / vp.clientWidth, 0, 1);
     }
+  } else if (fingers.size === 2) {
+    beginPinch();
   }
 
-  if (fingers.size === 2) {
-    const [a, b] = [...fingers.values()];
-    const cx = (a.x + b.x) / 2;
-    const cy = (a.y + b.y) / 2;
-    pinch = {
-      distance: Math.hypot(a.x - b.x, a.y - b.y),
-      startZoom: zoom,
-      imageX: (cx - x) / (fit * zoom),
-      imageY: (cy - y) / (fit * zoom)
-    };
-    drag = null;
-  }
-  redraw();
+  schedulePaint();
 });
 
 vp.addEventListener("pointermove", e => {
   if (!fingers.has(e.pointerId)) return;
+
   const p = localPoint(e);
   fingers.set(e.pointerId, p);
 
-  if (fingers.size === 2 && pinch) {
+  if (fingers.size === 2 && gesture) {
     const [a, b] = [...fingers.values()];
+
     const cx = (a.x + b.x) / 2;
     const cy = (a.y + b.y) / 2;
-    const distance = Math.hypot(a.x - b.x, a.y - b.y);
+
+    const distance = Math.hypot(
+      a.x - b.x,
+      a.y - b.y
+    );
 
     zoom = clamp(
-      pinch.startZoom * distance / Math.max(1, pinch.distance),
-      1, 24
+      gesture.startZoom *
+        distance / gesture.distance,
+      1,
+      24
     );
-    x = cx - pinch.imageX * fit * zoom;
-    y = cy - pinch.imageY * fit * zoom;
-  } else if (drag && fingers.size === 1) {
+
+    x = cx - gesture.imageX * fit * zoom;
+    y = cy - gesture.imageY * fit * zoom;
+
+  } else if (
+    fingers.size === 1 &&
+    single &&
+    single.id === e.pointerId
+  ) {
     if (mode === "slide") {
-      position = clamp(p.x / vp.clientWidth, 0, 1);
+      split = clamp(
+        p.x / vp.clientWidth,
+        0,
+        1
+      );
     } else {
-      const speed = matchMedia("(pointer: coarse)").matches
-        ? 3
-        : Number(document.getElementById("speed").value);
-      x = drag.startX + (p.x - drag.x) * speed;
-      y = drag.startY + (p.y - drag.y) * speed;
+      // Swobodne przesuwanie we wszystkich kierunkach.
+      x = single.startX +
+        p.x - single.startPoint.x;
+
+      y = single.startY +
+        p.y - single.startPoint.y;
     }
   }
-  redraw();
+
+  schedulePaint();
 });
 
-function endTouch(e) {
+function endPointer(e) {
+  if (!fingers.has(e.pointerId)) return;
+
   fingers.delete(e.pointerId);
-  pinch = null;
+  gesture = null;
+
   if (fingers.size === 1) {
-    const p = [...fingers.values()][0];
-    drag = { ...p, startX: x, startY: y };
+    const [id, p] = [...fingers.entries()][0];
+
+    single = {
+      id,
+      startPoint: p,
+      startX: x,
+      startY: y
+    };
   } else {
-    drag = null;
+    single = null;
   }
+
+  schedulePaint();
 }
 
-vp.addEventListener("pointerup", endTouch);
-vp.addEventListener("pointercancel", endTouch);
+vp.addEventListener("pointerup", endPointer);
+vp.addEventListener("pointercancel", endPointer);
+vp.addEventListener("lostpointercapture", endPointer);
 
-function jumpTo(e) {
+function moveFromNavigator(e) {
   const r = nav.getBoundingClientRect();
-  const u = clamp((e.clientX - r.left) / r.width, 0, 1);
-  const v = clamp((e.clientY - r.top) / r.height, 0, 1);
-  const s = fit * zoom;
-  x = vp.clientWidth / 2 - u * W * s;
-  y = vp.clientHeight / 2 - v * H * s;
-  redraw();
+
+  const u = clamp(
+    (e.clientX - r.left) / r.width,
+    0,
+    1
+  );
+
+  const v = clamp(
+    (e.clientY - r.top) / r.height,
+    0,
+    1
+  );
+
+  x = vp.clientWidth / 2 - u * W * fit * zoom;
+  y = vp.clientHeight / 2 - v * H * fit * zoom;
+
+  schedulePaint();
 }
 
 nav.addEventListener("pointerdown", e => {
   e.stopPropagation();
   nav.setPointerCapture(e.pointerId);
-  jumpTo(e);
+  moveFromNavigator(e);
 });
+
 nav.addEventListener("pointermove", e => {
-  if (nav.hasPointerCapture(e.pointerId)) jumpTo(e);
+  if (nav.hasPointerCapture(e.pointerId)) {
+    moveFromNavigator(e);
+  }
 });
 
 window.addEventListener("keydown", e => {
   if (mode !== "pan") return;
-  const amount = 70 * Number(document.getElementById("speed").value);
+
+  const amount = 25 * Number(
+    document.getElementById("speed").value
+  );
+
   if (e.key === "ArrowLeft") x += amount;
   else if (e.key === "ArrowRight") x -= amount;
   else if (e.key === "ArrowUp") y += amount;
   else if (e.key === "ArrowDown") y -= amount;
   else return;
+
   e.preventDefault();
-  redraw();
+  schedulePaint();
 });
 
-window.addEventListener("resize", resetView);
-resetView();
+window.addEventListener("resize", fitView);
+
+fitView();
 </script>
 </body>
 </html>
